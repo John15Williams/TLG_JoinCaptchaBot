@@ -1,48 +1,20 @@
 
 SHELL = /bin/bash
-TOOLS="./tools"
+NAME = captcha-bot
+DOCKERFILE = Dockerfile
 
-.PHONY: help run kill status monitor errors
 
-help:
-	@ echo ""
-	@ echo "Usage:"
-	@ echo "  setup: Setup Project"
-	@ echo "  run: Launch the Bot"
-	@ echo "  kill: Stop the Bot"
-	@ echo "  status: Check if Bot is running"
-	@ echo "  monitor: Check users captcha process"
-	@ echo "  error: Check for errors in the Bot"
-	@ echo ""
+.PHONY: build force test debug
 
-setup:
-	@ chmod +x $(TOOLS)/setup
-	@ $(TOOLS)/setup
+build:
+	docker build -f "${DOCKERFILE}" -t "${NAME}" .
 
-run:
-	@ chmod +x $(TOOLS)/run
-	@ $(TOOLS)/run
+force:
+	docker build -f "${DOCKERFILE}" -t "${NAME}" --no-cache .
 
-kill:
-	@ chmod +x $(TOOLS)/kill
-	@ $(TOOLS)/kill
+test:
+	$(MAKE)
+	docker run -it $(NAME):latest
 
-status:
-	@ chmod +x $(TOOLS)/status
-	@ $(TOOLS)/status
-
-monitor:
-	@ chmod +x $(TOOLS)/monitor
-	@ $(TOOLS)/monitor
-
-errors:
-	@ chmod +x $(TOOLS)/check_errors
-	@ $(TOOLS)/check_errors
-
-catcfgchat:
-	@ chmod +x $(TOOLS)/catcfgchat
-	@ $(TOOLS)/catcfgchat
-
-stats:
-	@ chmod +x $(TOOLS)/stats
-	@ $(TOOLS)/stats
+debug:	test
+	docker run -it --user=root --entrypoint ${SHELL} $(NAME):latest
